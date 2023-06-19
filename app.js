@@ -24,8 +24,15 @@ app.get('/', function(req, res) {
 
     //Make http request to the api
     https.get(url, function(response) {
-      response.on("data", function(data) {
+
+      let chunks = [];
+      response.on('data', function(data) {
         
+        chunks.push(data);
+
+      }).on('end', function() {
+        
+        let data   = Buffer.concat(chunks);
         var report = JSON.parse(data);
         var allDaysHtml = "";
 
@@ -41,6 +48,12 @@ app.get('/', function(req, res) {
         var page_html = filedata.toString().replace('&{rows}', allDaysHtml);
         res.set('Content-Type', 'text/html');
         res.end(page_html);
+      
+      });
+
+      response.on("data", function(data) {
+        
+        
       });
     });
     
